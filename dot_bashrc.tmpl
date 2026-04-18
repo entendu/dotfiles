@@ -1,0 +1,41 @@
+case $- in *i*) ;; *) return ;; esac
+
+export CLICOLOR=1
+export LSCOLORS=ExFxCxDxBxegedabagacad
+export HOMEBREW_AUTO_UPDATE_SECS=604800
+export EDITOR=vi
+export PAGER=less
+export LESS='-R -F -X'
+
+{{ if eq .chezmoi.os "darwin" -}}
+{{ if eq .chezmoi.arch "arm64" -}}
+eval "$(/opt/homebrew/bin/brew shellenv)"
+{{ else -}}
+eval "$(/usr/local/bin/brew shellenv)"
+{{ end -}}
+{{ end -}}
+
+[[ -d "$HOME/.local/bin" ]] && PATH="$HOME/.local/bin:$PATH"
+[[ -d "$HOME/bin" ]] && PATH="$HOME/bin:$PATH"
+[[ -d "$HOME/.npm-global/bin" ]] && PATH="$HOME/.npm-global/bin:$PATH"
+export PATH
+
+if [[ -f "$HOME/.openclaw/completions/openclaw.bash" ]]; then
+    source "$HOME/.openclaw/completions/openclaw.bash"
+fi
+
+parse_git_branch() {
+    git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+export PS1='\u@\h \[\033[32m\]\w\[\033[33m\]$(parse_git_branch)\[\033[00m\] $ '
+
+shopt -s histappend checkwinsize cmdhist
+HISTSIZE=50000
+HISTFILESIZE=100000
+HISTCONTROL=ignoreboth:erasedups
+HISTTIMEFORMAT='%F %T '
+PROMPT_COMMAND='history -a'
+
+[[ -f ~/.aliases ]] && source ~/.aliases
+[[ -f ~/.functions ]] && source ~/.functions
+[[ -f ~/.bashrc.local ]] && source ~/.bashrc.local

@@ -1,0 +1,35 @@
+{{- if eq .chezmoi.os "darwin" -}}
+tap "teamookla/speedtest"
+
+brew "bash"
+brew "coreutils"
+brew "gh"
+brew "git"
+brew "tmux"
+brew "vim"
+brew "wget"
+brew "jq"
+brew "ripgrep"
+brew "fzf"
+brew "chezmoi"
+
+brew "ffmpeg"
+brew "sox"
+brew "iperf3"
+brew "teamookla/speedtest/speedtest"
+
+brew "node"
+brew "python@3.11"
+brew "go"
+brew "rust"
+
+brew "docker"
+brew "docker-compose"
+brew "esphome"
+brew "apcupsd"
+
+cask "claude"
+cask "openscad"
+cask "silicon-labs-vcp-driver"
+cask "wch-ch34x-usb-serial-driver"
+{{- end -}}

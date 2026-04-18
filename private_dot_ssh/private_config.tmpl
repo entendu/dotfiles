@@ -1,0 +1,38 @@
+Include ~/.ssh/config.local
+
+Host *
+    ServerAliveInterval 15
+    ServerAliveCountMax 3
+{{- if eq .chezmoi.os "darwin" }}
+    UseKeychain yes
+    AddKeysToAgent yes
+{{- end }}
+
+Host nx01
+    HostName nx01.lan
+    User domenic
+
+Host nx01-dev
+    HostName nx01.lan
+    Port 2222
+    User root
+
+Host ha
+    HostName ha.lan
+    User claude
+
+Host dockerhost
+    HostName 192.168.173.229
+    User claude
+
+Host lilmac
+    HostName lilmac.lan
+    User claude
+
+Host bigmac
+    HostName bigmac.lan
+    User claude
+
+Host firewalla
+    HostName firewalla.local
+    User pi

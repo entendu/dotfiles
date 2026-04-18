@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NX01_DOCS="${HOME}/code/nx01-docs"
+MEMORY_DIR="${NX01_DOCS}/memory"
+
+if [[ ! -d "${NX01_DOCS}" ]]; then
+    echo "Cloning nx01-docs sibling repo..."
+    mkdir -p "${HOME}/code"
+    git clone git@github.com:entendu/nx01-docs.git "${NX01_DOCS}"
+fi
+
+# Only symlink:
+#  - the user-scoped memory dir (shared across all projects for this user)
+#  - the nx01-docs project-scoped memory dir (same content, same project)
+# Other projects keep their own memory.
+user_slug="$(echo "${HOME}" | sed 's|^/||; s|/|-|g')"
+targets=(
+    "${HOME}/.claude/projects/-${user_slug}/memory"
+    "${HOME}/.claude/projects/-${user_slug}-nx01-docs/memory"
+)
+
+for target in "${targets[@]}"; do
+    parent="$(dirname "${target}")"
+    [[ -d "${parent}" ]] || mkdir -p "${parent}"
+    if [[ -L "${target}" ]]; then
+        [[ "$(readlink "${target}")" == "${MEMORY_DIR}" ]] && continue
+        rm "${target}"
+    elif [[ -d "${target}" ]]; then
+        backup="${target}.bak-$(date +%Y%m%d%H%M%S)"
+        echo "Backing up existing ${target} to ${backup}"
+        mv "${target}" "${backup}"
+    fi
+    echo "Symlinking ${target} -> ${MEMORY_DIR}"
+    ln -s "${MEMORY_DIR}" "${target}"
+done

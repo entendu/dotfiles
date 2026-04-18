@@ -1,0 +1,8 @@
+{{- $name := promptStringOnce . "name" "Full name for git" "Domenic Santangelo" -}}
+{{- $email := promptStringOnce . "email" "Email for git" "domenics@gmail.com" -}}
+{{- $isAuthoring := promptBoolOnce . "is_authoring" "Is this a primary authoring machine (push changes back)" false -}}
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    is_authoring = {{ $isAuthoring }}

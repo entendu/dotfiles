@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+{{ if eq .chezmoi.os "darwin" -}}
+set -euo pipefail
+
+PLIST="${HOME}/Library/LaunchAgents/com.entendu.dotfiles-sync.plist"
+SCRIPT_DIR="${HOME}/.local/share/entendu"
+SCRIPT="${SCRIPT_DIR}/dotfiles-sync.sh"
+
+mkdir -p "${SCRIPT_DIR}"
+cat > "${SCRIPT}" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+log="${HOME}/.local/share/entendu/dotfiles-sync.log"
+{
+    echo "=== $(date '+%Y-%m-%d %H:%M:%S') ==="
+    cd "${HOME}/code/dotfiles" && git pull --rebase --autostash
+    cd "${HOME}/code/nx01-docs" && git pull --rebase --autostash
+    chezmoi apply
+} >> "${log}" 2>&1
+SH
+chmod +x "${SCRIPT}"
+
+mkdir -p "$(dirname "${PLIST}")"
+cat > "${PLIST}" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key><string>com.entendu.dotfiles-sync</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>${SCRIPT}</string>
+    </array>
+    <key>StartInterval</key><integer>600</integer>
+    <key>RunAtLoad</key><true/>
+    <key>StandardOutPath</key><string>${HOME}/.local/share/entendu/dotfiles-sync.stdout.log</string>
+    <key>StandardErrorPath</key><string>${HOME}/.local/share/entendu/dotfiles-sync.stderr.log</string>
+</dict>
+</plist>
+PLIST
+
+launchctl unload "${PLIST}" 2>/dev/null || true
+launchctl load "${PLIST}"
+echo "dotfiles-sync launchd agent installed (every 10 min)"
+{{ end -}}

@@ -1,0 +1,44 @@
+[user]
+	name = {{ .name }}
+	email = {{ .email }}
+[init]
+	defaultBranch = main
+[core]
+	editor = vi
+	excludesfile = ~/.gitignore_global
+	autocrlf = input
+[color]
+	ui = auto
+[pull]
+	rebase = true
+[push]
+	default = simple
+	autoSetupRemote = true
+[rebase]
+	autoStash = true
+[fetch]
+	prune = true
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[merge]
+	conflictStyle = zdiff3
+[rerere]
+	enabled = true
+{{ if eq .chezmoi.os "darwin" -}}
+[credential]
+	helper = osxkeychain
+{{ end -}}
+[alias]
+	c = commit
+	ca = commit -a
+	cm = commit -m
+	cam = commit -am
+	co = checkout
+	br = branch
+	st = status
+	d = diff
+	dc = diff --cached
+	l = log --graph --pretty=format:"%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset" --abbrev-commit
+	last = log -1 HEAD
+	unstage = reset HEAD --
